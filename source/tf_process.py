@@ -71,6 +71,10 @@ def training(sess, neuralnet, saver, dataset, iteration, batch_size):
             scipy.misc.imsave("%s/static/reconstruction/%d.png" %(PACK_PATH, it), img_recon)
 
             if(it == 0):
+                img_input = np.squeeze(X_tr, axis=0)
+                img_ground = np.squeeze(Y_tr, axis=0)
+                img_input = np.squeeze(img_input, axis=2)
+                img_ground = np.squeeze(img_ground, axis=2)
                 scipy.misc.imsave("%s/static/bicubic/%d.png" %(PACK_PATH, it), img_input)
                 scipy.misc.imsave("%s/static/high-resolution/%d.png" %(PACK_PATH, it), img_ground)
 
