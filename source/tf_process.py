@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 PACK_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/.."
 
-def training(sess, neuralnet, saver, dataset, iteration):
+def training(sess, neuralnet, saver, dataset, iteration, batch_size):
 
     start_time = time.time()
     loss_tr = 0
@@ -30,7 +30,7 @@ def training(sess, neuralnet, saver, dataset, iteration):
     train_writer = tf.summary.FileWriter(PACK_PATH+'/logs')
     for it in range(iteration):
 
-        X_tr, Y_tr = dataset.next_batch()
+        X_tr, Y_tr = dataset.next_batch(batch_size=batch_size)
         summaries, _ = sess.run([neuralnet.summaries, neuralnet.optimizer], feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
         loss_tr = sess.run(neuralnet.loss, feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
         list_loss.append(loss_tr)
@@ -40,7 +40,7 @@ def training(sess, neuralnet, saver, dataset, iteration):
             np.save("loss", np.asarray(list_loss))
 
             randidx = int(np.random.randint(dataset.amount, size=1))
-            X_tr, Y_tr = dataset.next_batch(idx=randidx)
+            X_tr, Y_tr = dataset.next_batch(batch_size=1, idx=randidx)
 
             img_recon = sess.run(neuralnet.recon, feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
             img_input = np.squeeze(X_tr, axis=0)
