@@ -13,7 +13,7 @@ class SRNET(object):
         self.inputs = tf.placeholder(tf.float32, [None, None, None, None])
         self.outputs = tf.placeholder(tf.float32, [None, None, None, None])
 
-        self.channel = 3
+        self.channel = 1
         self.n1 = 64
         self.n2 = 32
         self.f1 = 9

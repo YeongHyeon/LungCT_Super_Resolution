@@ -47,28 +47,30 @@ def training(sess, neuralnet, saver, dataset, iteration):
             img_recon = np.squeeze(img_recon, axis=0)
             img_ground = np.squeeze(Y_tr, axis=0)
 
+            img_input = np.squeeze(img_input, axis=2)
+            img_recon = np.squeeze(img_recon, axis=2)
+            img_ground = np.squeeze(img_ground, axis=2)
+
             plt.clf()
             plt.subplot(131)
             plt.title("Low-Resolution")
-            plt.imshow(img_input)
+            plt.imshow(img_input, cmap='gray')
             plt.subplot(132)
             plt.title("Reconstruction")
-            plt.imshow(img_recon)
+            plt.imshow(img_recon, cmap='gray')
             plt.subplot(133)
             plt.title("High-Resolution")
-            plt.imshow(img_ground)
+            plt.imshow(img_ground, cmap='gray')
             plt.tight_layout(pad=1, w_pad=1, h_pad=1)
             plt.savefig("%s/training/%d.png" %(PACK_PATH, it))
 
             """static img"""
             X_tr, Y_tr = dataset.next_batch(idx=int(11))
             img_recon = sess.run(neuralnet.recon, feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
-            img_recon = np.squeeze(img_recon, axis=0)
+            img_recon = np.squeeze(np.squeeze(img_recon, axis=0), axis=2)
             scipy.misc.imsave("%s/static/reconstruction/%d.png" %(PACK_PATH, it), img_recon)
 
             if(it == 0):
-                img_input = np.squeeze(X_tr, axis=0)
-                img_ground = np.squeeze(Y_tr, axis=0)
                 scipy.misc.imsave("%s/static/bicubic/%d.png" %(PACK_PATH, it), img_input)
                 scipy.misc.imsave("%s/static/high-resolution/%d.png" %(PACK_PATH, it), img_ground)
 
@@ -93,25 +95,6 @@ def training(sess, neuralnet, saver, dataset, iteration):
     # plt.legend(loc='best')
     plt.tight_layout(pad=1, w_pad=1, h_pad=1)
     plt.savefig("loss.png")
-
-    if(list_loss.shape[0] > 100):
-        sparse_loss_x = np.zeros((100))
-        sparse_loss = np.zeros((100))
-
-        unit = int(list_loss.shape[0]/100)
-        for i in range(100):
-            sparse_loss_x[i] = i * unit
-            sparse_loss[i] = list_loss[i * unit]
-
-        plt.clf()
-        plt.rcParams['font.size'] = 15
-        plt.plot(sparse_loss_x, sparse_loss, color='blue', linestyle="-", label="loss")
-        # plt.plot(sparse_loss_x, np.log(sparse_loss), color='tomato', linestyle="--", label="log scale loss")
-        plt.ylabel("loss")
-        plt.xlabel("iteration")
-        # plt.legend(loc='best')
-        plt.tight_layout(pad=1, w_pad=1, h_pad=1)
-        plt.savefig("loss_sparse-ver.png")
 
 # def validation(sess, neuralnet, saver,
 #                dataset, sequence_length):
