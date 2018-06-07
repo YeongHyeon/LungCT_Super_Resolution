@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 PACK_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))+"/.."
 
-def training(sess, neuralnet, saver, dataset, iteration, batch_size):
+def training(sess, neuralnet, saver, dataset, epochs, batch_size):
 
     start_time = time.time()
     loss_tr = 0
@@ -26,9 +26,10 @@ def training(sess, neuralnet, saver, dataset, iteration, batch_size):
     except: pass
 
 
-    print("\nTraining SRCNN to %d iterations" %(iteration))
+    print("\nTraining SRCNN to %d iterations" %(epochs*dataset.amount))
     train_writer = tf.summary.FileWriter(PACK_PATH+'/logs')
-    for it in range(iteration):
+    iteration = epochs*dataset.amount
+    for it in range(iteration + 1):
 
         X_tr, Y_tr = dataset.next_batch(batch_size=batch_size)
         summaries, _ = sess.run([neuralnet.summaries, neuralnet.optimizer], feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})

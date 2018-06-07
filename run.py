@@ -18,12 +18,12 @@ def main():
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
 
-    tfp.training(sess=sess, neuralnet=srnet, saver=saver, dataset=dataset, iteration=int(FLAGS.iter), batch_size=FLAGS.batch)
+    tfp.training(sess=sess, neuralnet=srnet, saver=saver, dataset=dataset, epochs=int(FLAGS.epoch), batch_size=FLAGS.batch)
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--iter', type=int, default=1e5, help='-')
+    parser.add_argument('--epoch', type=int, default=100, help='-')
     parser.add_argument('--batch', type=int, default=10, help='-')
 
     FLAGS, unparsed = parser.parse_known_args()
