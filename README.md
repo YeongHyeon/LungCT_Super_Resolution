@@ -1,10 +1,6 @@
 LungCT Super Resolution
 =====
 
-Dataset
------
-Olya Grove et al., LungCT-Diagnosis, http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118261
-
 Result
 -----
 |Loss|PSNR|
@@ -18,3 +14,8 @@ Figure 1. The graph of training process.
 |<img src = 'readme/low.png'>|<img src = 'readme/recon.png'>|<img src = 'readme/high.png'>|  
 
 Figure 2. The sample reconstruction CT.  
+
+Reference
+-----
+Dong, C., Loy, C. C., He, K., & Tang, X. (2016). Image super-resolution using deep convolutional networks, IEEE,  https://ieeexplore.ieee.org/abstract/document/7115171/  
+Grove, O., Berglund, A. E., Schabath, M. B., Aerts, H. J., Dekker, A., Wang, & Eikman, E. (2015). Quantitative computed tomographic descriptors associate tumor shape complexity and intratumor heterogeneity with prognosis in lung adenocarcinoma, PloS one, http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0118261  
