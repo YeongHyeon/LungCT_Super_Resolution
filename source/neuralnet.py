@@ -43,6 +43,7 @@ class SRNET(object):
         self.recon = tf.clip_by_value(self.recon_tmp, clip_value_min=0.0, clip_value_max=1.0)
 
         self.loss = tf.sqrt(tf.reduce_sum(tf.square(self.recon - self.outputs)))
+        self.psnr = tf.log(1 / tf.sqrt(tf.reduce_mean(tf.square(self.recon - self.outputs)))) * 20
         # self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-5).minimize(loss=self.loss)
         self.optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(loss=self.loss)
 
@@ -62,5 +63,6 @@ class SRNET(object):
         # tf.summary.image('img-outputs', self.outputs)
 
         tf.summary.scalar('loss', self.loss)
+        tf.summary.scalar('psnr', self.psnr)
 
         self.summaries = tf.summary.merge_all()
