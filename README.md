@@ -10,6 +10,7 @@ Result
 |Loss|PSNR|
 |:---:|:---:|
 |<img src = 'readme/graph_loss.png'>|<img src = 'readme/graph_psnr.png'>|  
+
 Figure 1. The graph of training process.  
 
 |Low resolution|Reconstruction<br>(PSNR:44.51 dB)|High resolution|
