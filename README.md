@@ -15,4 +15,5 @@ Figure 1. The graph of training process.
 |Low resolution|Reconstruction<br>(PSNR:44.51 dB)|High resolution|
 |:---:|:---:|:---:|
 |<img src = 'readme/low.png'>|<img src = 'readme/recon.png'>|<img src = 'readme/high.png'>|  
+
 Figure 2. The sample reconstruction CT.  
