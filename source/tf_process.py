@@ -85,8 +85,8 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
             scipy.misc.imsave("%s/static/reconstruction/%d.png" %(PACK_PATH, it), img_recon)
 
             plt.clf()
-            plt.rcParams['font.size'] = 100
-            plt.figure(figsize=(100, 40))
+            plt.rcParams['font.size'] = 30
+            plt.figure(figsize=(40, 10))
             plt.subplot(131)
             plt.title("Low-Resolution")
             plt.imshow(img_input, cmap='gray')
