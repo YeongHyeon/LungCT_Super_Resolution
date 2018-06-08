@@ -69,6 +69,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
             plt.imshow(img_ground, cmap='gray')
             plt.tight_layout(pad=1, w_pad=1, h_pad=1)
             plt.savefig("%s/training/%d.png" %(PACK_PATH, it))
+            plt.close()
 
             """static img"""
             X_tr, Y_tr = dataset.next_batch(idx=int(11))
@@ -97,6 +98,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
             plt.imshow(img_ground, cmap='gray')
             plt.tight_layout(pad=1, w_pad=1, h_pad=1)
             plt.savefig("%s/static/compare/%d.png" %(PACK_PATH, it))
+            plt.close()
 
             if(it == 0):
                 scipy.misc.imsave("%s/static/low-resolution/%d.png" %(PACK_PATH, it), img_input)
@@ -119,6 +121,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
     plt.xlabel("iteration")
     plt.tight_layout(pad=1, w_pad=1, h_pad=1)
     plt.savefig("loss.png")
+    plt.close()
 
     np.save("psnr", np.asarray(list_psnr))
     plt.clf()
@@ -128,6 +131,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
     plt.xlabel("iteration")
     plt.tight_layout(pad=1, w_pad=1, h_pad=1)
     plt.savefig("psnr.png")
+    plt.close()
 
     np.save("loss_static", np.asarray(list_loss_static))
     plt.clf()
@@ -137,6 +141,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
     plt.xlabel("iteration")
     plt.tight_layout(pad=1, w_pad=1, h_pad=1)
     plt.savefig("loss_static.png")
+    plt.close()
 
     np.save("psnr_static", np.asarray(list_psnr_static))
     plt.clf()
@@ -146,6 +151,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
     plt.xlabel("iteration")
     plt.tight_layout(pad=1, w_pad=1, h_pad=1)
     plt.savefig("psnr_static.png")
+    plt.close()
 
 # def validation(sess, neuralnet, saver,
 #                dataset, sequence_length):
