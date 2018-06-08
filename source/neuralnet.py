@@ -44,7 +44,7 @@ class SRNET(object):
 
         self.loss = tf.sqrt(tf.reduce_sum(tf.square(self.recon - self.outputs)))
         self.psnr = tf.log(1 / tf.sqrt(tf.reduce_mean(tf.square(self.recon - self.outputs)))) / tf.log(10.0) * 20
-        # self.optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-5).minimize(loss=self.loss)
+
         self.optimizer = tf.train.AdamOptimizer(learning_rate=1e-4).minimize(loss=self.loss)
 
         tf.summary.histogram('w-patch_ext', self.weights['patch_ext'])
@@ -53,14 +53,6 @@ class SRNET(object):
         tf.summary.histogram('b-patch_ext', self.biases['patch_ext'])
         tf.summary.histogram('b-nl_map', self.biases['nl_map'])
         tf.summary.histogram('b-recon', self.biases['recon'])
-
-        # tf.summary.image('img-inputs', self.inputs)
-        # for c_idx in range(self.n1):
-        #     tf.summary.image('img-patch_ext %d' %(c_idx), tf.expand_dims(self.patch_ext[:,:,:,c_idx], 3))
-        # for c_idx in range(self.n2):
-        #     tf.summary.image('img-nonlinear_map %d' %(c_idx), tf.expand_dims(self.nonlinear_map[:,:,:,c_idx], 3))
-        # tf.summary.image('img-recon', self.recon)
-        # tf.summary.image('img-outputs', self.outputs)
 
         tf.summary.scalar('loss', self.loss)
         tf.summary.scalar('psnr', self.psnr)

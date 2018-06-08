@@ -20,7 +20,7 @@ except: pass
 
 for idx, ltr in enumerate(list_tr):
     origin = np.load(ltr)
-    low = scipy.misc.imresize(origin, (int(origin.shape[0]/4), int(origin.shape[1]/4)))
+    low = scipy.misc.imresize(origin, (int(origin.shape[0]/2), int(origin.shape[1]/2)))
     low = scipy.misc.imresize(low, (int(origin.shape[0]), int(origin.shape[1])), 'bilinear')
     np.save("./dataset/low_tr/%d" %(idx), low)
     np.save("./dataset/high_tr/%d" %(idx), origin)
