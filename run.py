@@ -2,7 +2,7 @@ import argparse
 
 import tensorflow as tf
 
-import source.neuralnet2 as nn
+import source.neuralnet as nn
 import source.datamanager as dman
 import source.tf_process as tfp
 import source.stamper as stamper
@@ -23,7 +23,7 @@ def main():
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epoch', type=int, default=100, help='-')
+    parser.add_argument('--epoch', type=int, default=10, help='-')
     parser.add_argument('--batch', type=int, default=10, help='-')
 
     FLAGS, unparsed = parser.parse_known_args()
