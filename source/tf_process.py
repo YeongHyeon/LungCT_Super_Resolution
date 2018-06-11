@@ -1,5 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
 import os, inspect, time
-
 import scipy.misc
 
 import tensorflow as tf
