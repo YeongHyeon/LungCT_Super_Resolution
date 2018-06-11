@@ -2,7 +2,7 @@ import argparse
 
 import tensorflow as tf
 
-import source.neuralnet2 as nn
+import source.neuralnet3 as nn
 import source.datamanager as dman
 import source.tf_process as tfp
 import source.stamper as stamper
