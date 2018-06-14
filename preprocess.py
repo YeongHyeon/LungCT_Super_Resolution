@@ -22,6 +22,7 @@ for idx, ltr in enumerate(list_tr):
     origin = np.load(ltr)
     low = scipy.misc.imresize(origin, (int(origin.shape[0]/2), int(origin.shape[1]/2)))
     low = scipy.misc.imresize(low, (int(origin.shape[0]), int(origin.shape[1])), 'bilinear')
+    low = np.true_divide(low, np.max(low), dtype=np.float32)
     np.save("./dataset/low_tr/%d" %(idx), low)
     np.save("./dataset/high_tr/%d" %(idx), origin)
 
@@ -29,5 +30,6 @@ for idx, lte in enumerate(list_te):
     origin = np.load(lte)
     low = scipy.misc.imresize(origin, (int(origin.shape[0]/2), int(origin.shape[1]/2)))
     low = scipy.misc.imresize(low, (int(origin.shape[0]), int(origin.shape[1])), 'bilinear')
+    low = np.true_divide(low, np.max(low), dtype=np.float32)
     np.save("./dataset/low_te/%d" %(idx), low)
     np.save("./dataset/high_te/%d" %(idx), origin)

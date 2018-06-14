@@ -174,23 +174,43 @@ def validation(sess, neuralnet, saver, dataset):
     avg_psnr = 0
     min_psnr = 1000
     max_psnr = 0
+
+    avg_gap = 0
+    min_gap = 1000
+    max_gap = 0
+    min_gap_idx = 0
+    max_gap_idx = 0
+
     for te_idx in range(dataset.amount_te):
 
         X_te, Y_te = dataset.next_batch(idx=te_idx)
         img_recon, recon_psnr = sess.run([neuralnet.recon, neuralnet.psnr], feed_dict={neuralnet.inputs:X_te, neuralnet.outputs:Y_te})
         avg_psnr += recon_psnr
-        if(min_psnr > recon_psnr): min_psnr = recon_psnr
-        if(max_psnr < recon_psnr): max_psnr = recon_psnr
 
-        print("%d-th test | PSNR: %f" %(te_idx, recon_psnr))
         img_input = np.squeeze(X_te, axis=0)
         img_ground = np.squeeze(Y_te, axis=0)
         img_recon = np.squeeze(np.squeeze(img_recon, axis=0), axis=2)
         img_input = np.squeeze(img_input, axis=2)
         img_ground = np.squeeze(img_ground, axis=2)
+        img_input = np.true_divide(img_input, np.max(img_input), dtype=np.float32)
+
+        if(min_psnr > recon_psnr): min_psnr = recon_psnr
+        if(max_psnr < recon_psnr): max_psnr = recon_psnr
+        psnr_hr_recon = np.log(1 / np.sqrt(np.mean((img_ground-img_recon)**2))) / np.log(10.0) * 20
+        psnr_hr_lr = np.log(1 / np.sqrt(np.mean((img_ground-img_input)**2))) / np.log(10.0) * 20
+        psnr_gap = abs(psnr_hr_recon - psnr_hr_lr)
+        avg_gap += psnr_gap
+        if(min_gap > psnr_gap):
+            min_gap = psnr_gap
+            min_gap_idx = te_idx
+        if(max_gap < psnr_gap):
+            max_gap = psnr_gap
+            max_gap_idx = te_idx
+
+        print("Test [%d / %d] | PSNR: %f  GAP: %f" %(te_idx, dataset.amount_te, recon_psnr, psnr_gap))
 
         scipy.misc.imsave("%s/test/reconstruction/%d_%d.png" %(PACK_PATH, te_idx, int(recon_psnr)), img_recon)
-        scipy.misc.imsave("%s/test/low-resolution/%d.png" %(PACK_PATH, te_idx), img_input)
+        scipy.misc.imsave("%s/test/low-resolution/%d_%d.png" %(PACK_PATH, te_idx, int(psnr_hr_lr)), img_input)
         scipy.misc.imsave("%s/test/high-resolution/%d.png" %(PACK_PATH, te_idx), img_ground)
 
         upsized = scipy.misc.imresize(img_ground, (int(img_ground.shape[0]*2), int(img_ground.shape[1]*2)), 'bilinear')
@@ -200,3 +220,6 @@ def validation(sess, neuralnet, saver, dataset):
         scipy.misc.imsave("%s/test/upsized/%d.png" %(PACK_PATH, te_idx), upsized_recon)
 
     print("PSNR | AVG: %f  MIN: %f  MAX: %f" %(avg_psnr/dataset.amount_te, min_psnr, max_psnr))
+
+    print("Gap of PSNR | AVG: %f  MIN: %f  MAX: %f" %(avg_gap/dataset.amount_te, min_gap, max_gap))
+    print("Index of Gap | MIN: %d  MAX: %d" %(min_gap_idx, max_gap_idx))
