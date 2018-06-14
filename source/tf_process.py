@@ -45,12 +45,12 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
             np.save("loss", np.asarray(list_loss))
 
             randidx = int(np.random.randint(dataset.amount_te, size=1))
-            X_tr, Y_tr = dataset.next_batch(batch_size=1, idx=randidx)
+            X_te, Y_te = dataset.next_batch(batch_size=1, idx=randidx)
 
-            img_recon = sess.run(neuralnet.recon, feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
-            img_input = np.squeeze(X_tr, axis=0)
+            img_recon = sess.run(neuralnet.recon, feed_dict={neuralnet.inputs:X_te, neuralnet.outputs:Y_te})
+            img_input = np.squeeze(X_te, axis=0)
             img_recon = np.squeeze(img_recon, axis=0)
-            img_ground = np.squeeze(Y_tr, axis=0)
+            img_ground = np.squeeze(Y_te, axis=0)
 
             img_input = np.squeeze(img_input, axis=2)
             img_recon = np.squeeze(img_recon, axis=2)
@@ -73,10 +73,10 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
             plt.close()
 
             """static img"""
-            X_tr, Y_tr = dataset.next_batch(idx=int(11))
-            img_recon, recon_loss, recon_psnr = sess.run([neuralnet.recon, neuralnet.loss, neuralnet.psnr], feed_dict={neuralnet.inputs:X_tr, neuralnet.outputs:Y_tr})
-            img_input = np.squeeze(X_tr, axis=0)
-            img_ground = np.squeeze(Y_tr, axis=0)
+            X_te, Y_te = dataset.next_batch(idx=int(11))
+            img_recon, recon_loss, recon_psnr = sess.run([neuralnet.recon, neuralnet.loss, neuralnet.psnr], feed_dict={neuralnet.inputs:X_te, neuralnet.outputs:Y_te})
+            img_input = np.squeeze(X_te, axis=0)
+            img_ground = np.squeeze(Y_te, axis=0)
             img_recon = np.squeeze(np.squeeze(img_recon, axis=0), axis=2)
             img_input = np.squeeze(img_input, axis=2)
             img_ground = np.squeeze(img_ground, axis=2)
@@ -154,27 +154,50 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
     plt.savefig("psnr_static.png")
     plt.close()
 
-# def validation(sess, neuralnet, saver,
-#                dataset, sequence_length):
-#
-#     if(os.path.exists(PACK_PATH+"/Checkpoint/model_checker.index")):
-#         saver.restore(sess, PACK_PATH+"/Checkpoint/model_checker")
-#
-#     start_time = time.time()
-#     print("\nValidation")
-#     for at in range(dataset.am_total - (sequence_length * 2)):
-#
-#         if(dataset.is_norm): addnorm = True
-#         else: addnorm = False
-#
-#         X_val, Y_val = dataset.next_batch(batch_size=1, sequence_length=sequence_length, train=False)
-#         l2dist = sess.run(neuralnet.loss, feed_dict={neuralnet.inputs:X_val, neuralnet.outputs:Y_val})
-#
-#         if(addnorm): list_norm.append(l2dist)
-#         else: list_anom.append(l2dist)
-#
-#         if(at % 100 == 0):
-#             print("Validation [%d / %d] | L2 Dist: %f" %(at, dataset.am_total, l2dist))
-#
-#     elapsed_time = time.time() - start_time
-#     print("Elapsed: "+str(elapsed_time))
+def validation(sess, neuralnet, saver, dataset):
+
+    if(os.path.exists(PACK_PATH+"/Checkpoint/model_checker.index")):
+        saver.restore(sess, PACK_PATH+"/Checkpoint/model_checker")
+
+    try: os.mkdir(PACK_PATH+"/test")
+    except: pass
+    try: os.mkdir(PACK_PATH+"/test/low-resolution")
+    except: pass
+    try: os.mkdir(PACK_PATH+"/test/reconstruction")
+    except: pass
+    try: os.mkdir(PACK_PATH+"/test/high-resolution")
+    except: pass
+    try: os.mkdir(PACK_PATH+"/test/compare")
+    except: pass
+
+    print("\nValidation")
+    for te_idx in range(dataset.amount_te):
+
+        X_te, Y_te = dataset.next_batch(idx=te_idx)
+        img_recon, recon_psnr = sess.run([neuralnet.recon, neuralnet.psnr], feed_dict={neuralnet.inputs:X_te, neuralnet.outputs:Y_te})
+        print("%d-th test | PSNR: %f" %(recon_psnr))
+        img_input = np.squeeze(X_te, axis=0)
+        img_ground = np.squeeze(Y_te, axis=0)
+        img_recon = np.squeeze(np.squeeze(img_recon, axis=0), axis=2)
+        img_input = np.squeeze(img_input, axis=2)
+        img_ground = np.squeeze(img_ground, axis=2)
+
+        scipy.misc.imsave("%s/test/reconstruction/%d.png" %(PACK_PATH, te_idx), img_recon)
+        scipy.misc.imsave("%s/test/low-resolution/%d.png" %(PACK_PATH, te_idx), img_input)
+        scipy.misc.imsave("%s/test/high-resolution/%d.png" %(PACK_PATH, te_idx), img_ground)
+
+        plt.clf()
+        plt.rcParams['font.size'] = 30
+        plt.figure(figsize=(40, 10))
+        plt.subplot(131)
+        plt.title("Low-Resolution")
+        plt.imshow(img_input, cmap='gray')
+        plt.subplot(132)
+        plt.title("Reconstruction")
+        plt.imshow(img_recon, cmap='gray')
+        plt.subplot(133)
+        plt.title("High-Resolution")
+        plt.imshow(img_ground, cmap='gray')
+        plt.tight_layout(pad=1, w_pad=1, h_pad=1)
+        plt.savefig("%s/test/compare/%d.png" %(PACK_PATH, te_idx))
+        plt.close()
