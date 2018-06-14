@@ -18,7 +18,7 @@ def main():
     sess.run(tf.global_variables_initializer())
     saver = tf.train.Saver()
 
-    # tfp.training(sess=sess, neuralnet=srnet, saver=saver, dataset=dataset, epochs=int(FLAGS.epoch), batch_size=FLAGS.batch)
+    tfp.training(sess=sess, neuralnet=srnet, saver=saver, dataset=dataset, epochs=int(FLAGS.epoch), batch_size=FLAGS.batch)
     tfp.validation(sess=sess, neuralnet=srnet, saver=saver, dataset=dataset)
 
 if __name__ == '__main__':
