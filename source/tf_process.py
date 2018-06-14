@@ -196,8 +196,8 @@ def validation(sess, neuralnet, saver, dataset):
 
         if(min_psnr > recon_psnr): min_psnr = recon_psnr
         if(max_psnr < recon_psnr): max_psnr = recon_psnr
-        psnr_hr_recon = np.log(1 / np.sqrt(np.mean((img_ground-img_recon)**2))) / np.log(10.0) * 20
-        psnr_hr_lr = np.log(1 / np.sqrt(np.mean((img_ground-img_input)**2))) / np.log(10.0) * 20
+        psnr_hr_recon = np.log10(1 / np.sqrt(np.mean((img_ground-img_recon)**2))) * 20
+        psnr_hr_lr = np.log10(1 / np.sqrt(np.mean((img_ground-img_input)**2))) * 20
         psnr_gap = abs(psnr_hr_recon - psnr_hr_lr)
         avg_gap += psnr_gap
         if(min_gap > psnr_gap):
