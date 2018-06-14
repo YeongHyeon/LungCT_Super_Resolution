@@ -83,7 +83,7 @@ def training(sess, neuralnet, saver, dataset, epochs, batch_size):
 
             list_loss_static.append(recon_loss)
             list_psnr_static.append(recon_psnr)
-            scipy.misc.imsave("%s/static/reconstruction/%d.png" %(PACK_PATH, it), img_recon)
+            scipy.misc.imsave("%s/static/reconstruction/%d_%d.png" %(PACK_PATH, it, int(recon_psnr)), img_recon)
 
             plt.clf()
             plt.rcParams['font.size'] = 30
@@ -167,37 +167,36 @@ def validation(sess, neuralnet, saver, dataset):
     except: pass
     try: os.mkdir(PACK_PATH+"/test/high-resolution")
     except: pass
-    try: os.mkdir(PACK_PATH+"/test/compare")
+    try: os.mkdir(PACK_PATH+"/test/upsized")
     except: pass
 
     print("\nValidation")
+    avg_psnr = 0
+    min_psnr = 1000
+    max_psnr = 0
     for te_idx in range(dataset.amount_te):
 
         X_te, Y_te = dataset.next_batch(idx=te_idx)
         img_recon, recon_psnr = sess.run([neuralnet.recon, neuralnet.psnr], feed_dict={neuralnet.inputs:X_te, neuralnet.outputs:Y_te})
-        print("%d-th test | PSNR: %f" %(recon_psnr))
+        avg_psnr += recon_psnr
+        if(min_psnr > recon_psnr): min_psnr = recon_psnr
+        if(max_psnr < recon_psnr): max_psnr = recon_psnr
+
+        print("%d-th test | PSNR: %f" %(te_idx, recon_psnr))
         img_input = np.squeeze(X_te, axis=0)
         img_ground = np.squeeze(Y_te, axis=0)
         img_recon = np.squeeze(np.squeeze(img_recon, axis=0), axis=2)
         img_input = np.squeeze(img_input, axis=2)
         img_ground = np.squeeze(img_ground, axis=2)
 
-        scipy.misc.imsave("%s/test/reconstruction/%d.png" %(PACK_PATH, te_idx), img_recon)
+        scipy.misc.imsave("%s/test/reconstruction/%d_%d.png" %(PACK_PATH, te_idx, int(recon_psnr)), img_recon)
         scipy.misc.imsave("%s/test/low-resolution/%d.png" %(PACK_PATH, te_idx), img_input)
         scipy.misc.imsave("%s/test/high-resolution/%d.png" %(PACK_PATH, te_idx), img_ground)
 
-        plt.clf()
-        plt.rcParams['font.size'] = 30
-        plt.figure(figsize=(40, 10))
-        plt.subplot(131)
-        plt.title("Low-Resolution")
-        plt.imshow(img_input, cmap='gray')
-        plt.subplot(132)
-        plt.title("Reconstruction")
-        plt.imshow(img_recon, cmap='gray')
-        plt.subplot(133)
-        plt.title("High-Resolution")
-        plt.imshow(img_ground, cmap='gray')
-        plt.tight_layout(pad=1, w_pad=1, h_pad=1)
-        plt.savefig("%s/test/compare/%d.png" %(PACK_PATH, te_idx))
-        plt.close()
+        upsized = scipy.misc.imresize(img_ground, (int(img_ground.shape[0]*2), int(img_ground.shape[1]*2)), 'bilinear')
+        upsized = upsized.reshape((1, upsized.shape[0], upsized.shape[1], -1))
+        upsized_recon = sess.run(neuralnet.recon, feed_dict={neuralnet.inputs:upsized})
+        upsized_recon = np.squeeze(np.squeeze(upsized_recon, axis=0), axis=2)
+        scipy.misc.imsave("%s/test/upsized/%d.png" %(PACK_PATH, te_idx), upsized_recon)
+
+    print("PSNR | AVG: %f  MIN: %f  MAX: %f" %(avg_psnr/dataset.amount_te, min_psnr, max_psnr))
