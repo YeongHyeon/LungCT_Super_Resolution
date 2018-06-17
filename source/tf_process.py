@@ -174,6 +174,9 @@ def validation(sess, neuralnet, saver, dataset):
     avg_psnr = 0
     min_psnr = 1000
     max_psnr = 0
+    avg_psnr_lr = 0
+    min_psnr_lr = 1000
+    max_psnr_lr = 0
 
     avg_gap = 0
     min_gap = 1000
@@ -198,6 +201,9 @@ def validation(sess, neuralnet, saver, dataset):
         if(max_psnr < recon_psnr): max_psnr = recon_psnr
         psnr_hr_recon = np.log10(1 / np.sqrt(np.mean((img_ground-img_recon)**2))) * 20
         psnr_hr_lr = np.log10(1 / np.sqrt(np.mean((img_ground-img_input)**2))) * 20
+        avg_psnr_lr += psnr_hr_lr
+        if(min_psnr_lr > psnr_hr_lr): min_psnr_lr = psnr_hr_lr
+        if(max_psnr_lr < psnr_hr_lr): max_psnr_lr = psnr_hr_lr
         psnr_gap = abs(psnr_hr_recon - psnr_hr_lr)
         avg_gap += psnr_gap
         if(min_gap > psnr_gap):
@@ -219,7 +225,8 @@ def validation(sess, neuralnet, saver, dataset):
         upsized_recon = np.squeeze(np.squeeze(upsized_recon, axis=0), axis=2)
         scipy.misc.imsave("%s/test/upsized/%d.png" %(PACK_PATH, te_idx), upsized_recon)
 
-    print("PSNR | AVG: %f  MIN: %f  MAX: %f" %(avg_psnr/dataset.amount_te, min_psnr, max_psnr))
+    print("PSNR - Reconstruction | AVG: %f  MIN: %f  MAX: %f" %(avg_psnr/dataset.amount_te, min_psnr, max_psnr))
+    print("PSNR - Low-Resolution | AVG: %f  MIN: %f  MAX: %f" %(avg_psnr_lr/dataset.amount_te, min_psnr_lr, max_psnr_lr))
 
     print("Gap of PSNR | AVG: %f  MIN: %f  MAX: %f" %(avg_gap/dataset.amount_te, min_gap, max_gap))
     print("Index of Gap | MIN: %d  MAX: %d" %(min_gap_idx, max_gap_idx))
